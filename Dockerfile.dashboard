@@ -1,0 +1,46 @@
+# Use Python 2.7 base image for compatibility with OpenDDS bindings
+FROM python:2.7-slim
+
+# Install system dependencies required to build OpenDDS and Python bindings
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    curl \
+    libssl-dev \
+    libboost-all-dev \
+    python-pip \
+    swig \
+    python-dev \
+    && apt-get clean
+
+# Clone OpenDDS source code from the repository
+RUN git clone https://github.com/objectcomputing/OpenDDS.git /opt/OpenDDS
+
+# Set environment variables for OpenDDS
+ENV DDS_ROOT=/opt/OpenDDS
+ENV PATH=$DDS_ROOT/bin:$PATH
+
+# Build OpenDDS from the root directory, limiting parallel jobs
+WORKDIR /opt/OpenDDS
+RUN ./configure && make -j2  # Limit the number of parallel jobs to 2
+
+# Install Python bindings (idlpy) for OpenDDS
+WORKDIR /opt/OpenDDS/tools/idlpy
+RUN make && pip install .
+
+# Install Flask for web dashboard
+RUN pip install flask
+
+# Set working directory for the app
+WORKDIR /app
+
+# Copy the dashboard subscriber script and Flask templates into the container
+COPY dds_subscriber.py /app
+COPY templates /app/templates
+
+# Expose port 5000 for the Flask web app
+EXPOSE 5000
+
+# Run the DDS subscriber script for the dashboard when the container starts
+CMD ["python", "/app/dds_subscriber.py"]
