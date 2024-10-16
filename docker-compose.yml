@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   router1:
-    build:
-      context: .
-      dockerfile: Dockerfile.router
+    image: azizhalq/smartnet:router-latest
     container_name: router1
     environment:
       - ROUTER_ID=router1
@@ -12,9 +10,7 @@ services:
       - dds-net
 
   router2:
-    build:
-      context: .
-      dockerfile: Dockerfile.router
+    image: azizhalq/smartnet:router-latest
     container_name: router2
     environment:
       - ROUTER_ID=router2
@@ -22,9 +18,7 @@ services:
       - dds-net
 
   router3:
-    build:
-      context: .
-      dockerfile: Dockerfile.router
+    image: azizhalq/smartnet:router-latest
     container_name: router3
     environment:
       - ROUTER_ID=router3
@@ -32,9 +26,7 @@ services:
       - dds-net
 
   dashboard:
-    build:
-      context: .
-      dockerfile: Dockerfile.dashboard
+    image: azizhalq/smartnet:dashboard-latest
     container_name: dashboard
     ports:
       - "5000:5000"  # Expose port for Flask web app
